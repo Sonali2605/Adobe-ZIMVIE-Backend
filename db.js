@@ -13,5 +13,13 @@ const courseSchema= mongoose.Schema({
     totalhours: String
 })
 
+const tokenSchema = mongoose.Schema({
+    access_token: String,
+    refresh_token: String,
+    expires_in: Date
+});
+
 const course = mongoose.model('courses', courseSchema);
-module.exports = {course}
+const token = mongoose.model('tokens', tokenSchema);
+
+module.exports = {course, token}
