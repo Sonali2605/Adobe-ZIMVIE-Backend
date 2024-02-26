@@ -7,10 +7,16 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 const port = 3000;
+const path = require("path");
 
 const base_adobe_url= "https://learningmanager.adobe.com";
 const clientId="eabb3668-a036-45c5-ba10-7a4160827517";
 const clientSecret="5ec25713-5718-4d71-91bd-c18f703b3407";
+
+const _dirname = path.dirname("");
+const buildpath = path.join(_dirname,"../Adobe-CPD-Frontend/dist");
+app.use(express.static(buildpath));
+
 app.get('/userReport',async(req,res) =>{
     const {user_id} = req.query;
     const courses = await course.find({user_id: user_id});
@@ -29,6 +35,7 @@ app.get('/userReport',async(req,res) =>{
     }));
     res.json({ user: user, courses: courseData });
 })
+
 app.get('/adminReport', async (req, res) => {
     const coursesByUser = await course.aggregate([
         {
@@ -225,7 +232,9 @@ app.post('/cpdData',async (req,res) =>{
         msg: "Course created"
     })
 })
-
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  });
 app.listen(port,()=>{
     console.log(`App is running on ${port}`)
 })
