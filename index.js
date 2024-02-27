@@ -57,44 +57,44 @@ app.get('/adminReport', async (req, res) => {
         }
     ]);
  // Array to store results of API calls for each user
- const reports = [];
- const token = await getToken();
- // Iterate over each user's courses
- for (const user of coursesByUser) {
-     const userId = user._id; // Assuming user_id is stored in _id field
-     // Make API call to Adobe API for each user ID
-     const userDataResponse = await axios.get(`${base_adobe_url}/primeapi/v2/users/${userId}/enrollments?include=learningObject&page[limit]=10&sort=dateEnrolled`,  {
-        headers: {
-            Authorization: `oauth ${token}`
-        }
-        });
-    let almDuration = 0;
-    if (userDataResponse && userDataResponse.data && userDataResponse.data.data) {
-        // Filter learning objects with state "COMPLETED"
-        const completedLearningObjects = userDataResponse.data.data.filter(item => item.attributes.state === "COMPLETED");
-        // Iterate over completed learning objects
-        completedLearningObjects.forEach(completedObject => {
-            // Extract ID of completed learning object
-            const completedObjectId = completedObject.id.split('_')[0];
-            // Search for the completed object in included array
-            const includedObject = userDataResponse.data.included.find(item => item.id === completedObjectId);
+//  const reports = [];
+// //  const token = await getToken();
+//  // Iterate over each user's courses
+//  for (const user of coursesByUser) {
+//      const userId = user._id; // Assuming user_id is stored in _id field
+//      // Make API call to Adobe API for each user ID
+//      const userDataResponse = await axios.get(`${base_adobe_url}/primeapi/v2/users/${userId}/enrollments?include=learningObject&page[limit]=10&sort=dateEnrolled`,  {
+//         headers: {
+//             Authorization: `oauth ${token}`
+//         }
+//         });
+//     let almDuration = 0;
+//     if (userDataResponse && userDataResponse.data && userDataResponse.data.data) {
+//         // Filter learning objects with state "COMPLETED"
+//         const completedLearningObjects = userDataResponse.data.data.filter(item => item.attributes.state === "COMPLETED");
+//         // Iterate over completed learning objects
+//         completedLearningObjects.forEach(completedObject => {
+//             // Extract ID of completed learning object
+//             const completedObjectId = completedObject.id.split('_')[0];
+//             // Search for the completed object in included array
+//             const includedObject = userDataResponse.data.included.find(item => item.id === completedObjectId);
     
-            // If included object with completedObjectId is found
-            if (includedObject) {
-                // Extract duration if available
-                const durationHours = includedObject.attributes.duration / 3600;
-                almDuration += durationHours;
-            }
-    })
-    }
-    user.almCourseDuration = almDuration;
+//             // If included object with completedObjectId is found
+//             if (includedObject) {
+//                 // Extract duration if available
+//                 const durationHours = includedObject.attributes.duration / 3600;
+//                 almDuration += durationHours;
+//             }
+//     })
+//     }
+//     user.almCourseDuration = almDuration;
 
-     // Push the user data to reports array
-     reports.push(user);
- }
- // Send the reports as response
- res.json(reports)
-// res.json(coursesByUser)
+//      // Push the user data to reports array
+//      reports.push(user);
+//  }
+//  // Send the reports as response
+//  res.json(reports)
+res.json(coursesByUser)
 });
 
 async function getToken() {
