@@ -5,11 +5,11 @@ const { course, token } = require("./db");
 const axios = require("axios")
 const app = express();
 const corsOptions = {
-    origin: "http://54.152.80.48:3000",
+    origin: "http://54.152.80.48:3002",
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
   };
   
-app.use(express.json());
+app.use(express.json(corsOptions));
 app.use(cors());
 const port = 3000;
 const path = require("path");

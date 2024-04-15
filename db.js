@@ -19,7 +19,23 @@ const tokenSchema = mongoose.Schema({
     expires_in: Date
 });
 
+const courseQuestionSchema =  mongoose.Schema({
+  courseId: {
+    type: String, // Assuming the course ID is a string
+    required: true
+  },
+  questions: [{
+    question: { type: String, required: true },
+    options: {
+      true: { type: String, required: true },
+      false: { type: String, required: true }
+    }
+  }]
+});
+
+
 const course = mongoose.model('courses', courseSchema);
 const token = mongoose.model('tokens', tokenSchema);
+const course_question = mongoose.model('course_question', courseQuestionSchema);
 
-module.exports = {course, token}
+module.exports = {course, token, course_question}
