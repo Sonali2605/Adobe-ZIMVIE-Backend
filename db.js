@@ -39,9 +39,55 @@ const courseQuestionSchema = mongoose.Schema({
   }]
 });
 
+const userQuestionSchema = mongoose.Schema({
+  email: {
+    type: String,
+    required: true
+  },
+  courseId: {
+    type: String,
+    required: true
+  },
+  courseName: {
+    type: String,
+    required: true
+  },
+  questions: [{
+    text: {
+      type: String,
+      required: true
+    },
+    options: {
+      type: [String],
+      enum: ['true', 'false'],
+      required: true
+    },
+    selectedAnswer: {
+      type: String,
+      required: true,
+      enum: {
+        values: ['true', 'false'],
+        message: 'Selected answer must be "true" or "false"'
+      }
+    }
+  }]
+});
 
+
+const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true
+  }
+});
 // const course = mongoose.model('courses', courseSchema);
 // const token = mongoose.model('tokens', tokenSchema);
 const course_question = mongoose.model('course_question', courseQuestionSchema);
+const user_question = mongoose.model('user_question', userQuestionSchema);
+const user = mongoose.model('user', userSchema);
 
-module.exports = {course_question}
+module.exports = {course_question,user_question,user}

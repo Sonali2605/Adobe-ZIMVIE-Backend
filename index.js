@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const { createCourse } = require("./types");
-const {course_question } = require("./db");
+const {course_question,user_question, user } = require("./db");
 const axios = require("axios")
 const app = express();
 const corsOptions = {
@@ -68,6 +68,100 @@ console.log("11111111111111111111111111", courseId, courses)
     }
 });
 
+app.post('/storeUserQuestions', async (req, res) => {
+    try {
+        const { email, courseId,courseName, questions } = req.body;
+
+        // Check if a user with the given email and courseId already exists
+        let existingUser = await user_question.findOne({ email, courseId });
+
+        if (existingUser) {
+            // Update the questions of the existing user
+            existingUser.questions = questions;
+            existingUser = await existingUser.save();
+            res.status(200).json({ message: 'Questions updated successfully', user: existingUser });
+        } else {
+            // Create a new user with the provided questions
+            const newUser = new user_question({ email, courseId, courseName, questions });
+            await newUser.save();
+            res.status(201).json({ message: 'New user created with questions', user: newUser });
+        }
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+
+app.get('/getUserQuestions', async (req, res) => {
+    try {
+        const { courseId, email } =  req.query;
+
+        // Find user by course ID and email
+        const userData = await user_question.findOne({ courseId, email });
+        console.log("_____________",userData);
+        if (userData) {
+            res.status(200).json(userData);
+        } else {
+            res.status(201).json({ message: 'User data not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.post('/createUser' ,  async (req, res) => {
+    try {
+      const { email, password } = req.body;
+  
+      // Check if the user already exists
+      const existingUser = await user.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ message: 'User already exists' });
+      }
+  
+      // Create a new user
+      const newUser = new user({ email, password });
+      await newUser.save();
+  
+      res.status(201).json({ message: 'User created successfully', user: newUser });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+
+  app.get('/getCoursesWithQuestions', async (req, res) => {
+    try {
+      // Retrieve all documents from the database
+      const allUserQuestions = await user_question.find();
+  
+      // Initialize an empty object to store the formatted data
+      const coursesData = {};
+  
+      // Loop through each document to format the data
+      allUserQuestions.forEach((userQuestion) => {
+        const { courseId, courseName, email, questions } = userQuestion;
+  
+        // Check if the courseId already exists in the coursesData object
+        if (!coursesData[courseId]) {
+          // If courseId doesn't exist, create a new entry for it
+          coursesData[courseId] = { courseName, users: [] };
+        }
+  
+        // Add user's email and questions to the respective course
+        coursesData[courseId].users.push({ email, questions });
+      });
+  
+      // Send the formatted data as the response
+      res.status(200).json(coursesData);
+    } catch (error) {
+      // Handle any errors and send an error response
+      console.error('Error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+  
 
 // app.get('/userReport',async(req,res) =>{
 //     const {user_id} = req.query;
