@@ -38,7 +38,7 @@ app.post('/createCourseQuestions', async (req, res) => {
             // If course does not exist, create a new course with the provided questions
             const newCourse = new course_question({ courseId, questions });
             await newCourse.save();
-            res.status(201).json({ message: 'New course created with questions', course: newCourse });
+            res.status(201).json({ message: 'Questions Created', course: newCourse });
         }
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -55,7 +55,7 @@ app.post('/createCourseQuestions', async (req, res) => {
 console.log("11111111111111111111111111", courseId, courses)
         // If no course is found, return 404
         if (courses.length === 0) {
-            return res.status(404).json({ error: 'Course not found' });
+            return res.status(404).json({ error: 'Course Questions not found' });
         }
 
         // Since courseId is unique, we can assume there's only one course found
@@ -70,21 +70,26 @@ console.log("11111111111111111111111111", courseId, courses)
 
 app.post('/storeUserQuestions', async (req, res) => {
     try {
-        const { email, courseId,courseName, questions } = req.body;
-
+      console.log("222222222222", req.body)
+        const { email, name, courseId,courseName, questions } = req.body;
+        console.log("244444", name, email)
         // Check if a user with the given email and courseId already exists
         let existingUser = await user_question.findOne({ email, courseId });
-
+        console.log("5555", name, email,existingUser)
         if (existingUser) {
             // Update the questions of the existing user
             existingUser.questions = questions;
             existingUser = await existingUser.save();
-            res.status(200).json({ message: 'Questions updated successfully', user: existingUser });
+            console.log("666666", name, email)
+            res.status(200).json({ message: 'Course registered successfully', user: existingUser });
         } else {
             // Create a new user with the provided questions
-            const newUser = new user_question({ email, courseId, courseName, questions });
+            console.log("7777777", name, email)
+            const newUser = new user_question({ name, email, courseId, courseName, questions });
+            console.log("8888888", name, email)
             await newUser.save();
-            res.status(201).json({ message: 'New user created with questions', user: newUser });
+            console.log("999999", name, email,newUser)
+            res.status(201).json({ message: 'Course registered successfully', user: newUser });
         }
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -108,6 +113,23 @@ app.get('/getUserQuestions', async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
+});
+
+app.get('/getUserDetails', async (req, res) => {
+  try {
+      const { email } =  req.query;
+    console.log("Email",email)
+      // Find user by course ID and email
+      const userData = await user_question.findOne({ email:email });
+      console.log("_____________",userData);
+      if (userData) {
+        res.status(200).json({ email: userData.email, name: userData.name });
+      } else {
+          res.status(201).json({ message: 'User data not found' });
+      }
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
 });
 
 app.post('/createUser' ,  async (req, res) => {
@@ -141,7 +163,7 @@ app.post('/createUser' ,  async (req, res) => {
   
       // Loop through each document to format the data
       allUserQuestions.forEach((userQuestion) => {
-        const { courseId, courseName, email, questions } = userQuestion;
+        const { name,courseId, courseName, email, questions } = userQuestion;
   
         // Check if the courseId already exists in the coursesData object
         if (!coursesData[courseId]) {
@@ -150,7 +172,7 @@ app.post('/createUser' ,  async (req, res) => {
         }
   
         // Add user's email and questions to the respective course
-        coursesData[courseId].users.push({ email, questions });
+        coursesData[courseId].users.push({ name, email, questions });
       });
   
       // Send the formatted data as the response

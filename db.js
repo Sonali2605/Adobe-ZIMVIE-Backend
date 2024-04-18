@@ -30,16 +30,15 @@ const courseQuestionSchema = mongoose.Schema({
     text: {
       type: String,
       required: true
-    },
-    options: {
-      type: [String],
-      enum: ['true', 'false'],
-      required: true
     }
   }]
 });
 
 const userQuestionSchema = mongoose.Schema({
+  name: {
+    type: String,
+    required: true
+  },
   email: {
     type: String,
     required: true
@@ -57,18 +56,9 @@ const userQuestionSchema = mongoose.Schema({
       type: String,
       required: true
     },
-    options: {
-      type: [String],
-      enum: ['true', 'false'],
-      required: true
-    },
     selectedAnswer: {
       type: String,
       required: true,
-      enum: {
-        values: ['true', 'false'],
-        message: 'Selected answer must be "true" or "false"'
-      }
     }
   }]
 });
