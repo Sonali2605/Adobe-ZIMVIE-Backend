@@ -120,10 +120,11 @@ app.get('/getUserDetails', async (req, res) => {
       const { email } =  req.query;
     console.log("Email",email)
       // Find user by course ID and email
-      const userData = await user_question.findOne({ email:email });
+      const userData = await user_question.find({ email:email });
       console.log("_____________",userData);
       if (userData) {
-        res.status(200).json({ email: userData.email, name: userData.name });
+        const courseIds = userData.map(data => data.courseId);
+        res.status(200).json({ email: userData[0].email, name: userData[0].name, courseIds });
       } else {
           res.status(201).json({ message: 'User data not found' });
       }
